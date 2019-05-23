@@ -6,5 +6,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'qr-angular';
+
+  private _message = 'write something';
+  qrString = '{}';
+
+  set message(newValue){
+    this._message = newValue;
+    this.qrString = JSON.stringify({message: this._message});
+  }
+
+  get message(newValue){
+    return this._message;
+  }
 }
