@@ -10,7 +10,7 @@ export class CryptographyService {
   constructor() { }
 
   generateKeyPair(): KeyPair {
-    const keyPair = r.KEYUTIL.generateKeypair('RSA', 4096);
+    const keyPair = r.KEYUTIL.generateKeypair('RSA', 2048);
     const privateKey = keyPair.prvKeyObj;
     const publicKey = keyPair.pubKeyObj;
     return {
