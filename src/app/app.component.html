@@ -1,9 +1,8 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div>
   <h2>Hello QR</h2>
-  <div>
-  </div>
   <qrcode [qrdata]="qrString" [size]="256" [level]="'M'"></qrcode>
-  <input type="text" [(ngModel)]="message">
+  <button (click)="generateKey()">Generate keys</button>
+  <button (click)="generateQr()">Generate qr</button>
 </div>
 

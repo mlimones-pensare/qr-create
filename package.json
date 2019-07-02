@@ -21,8 +21,10 @@
     "@angular/router": "~7.1.0",
     "angularx-qrcode": "^1.5.3",
     "core-js": "^2.5.4",
+    "jsrsasign": "^8.0.12",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
+    "uuid": "^3.3.2",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
