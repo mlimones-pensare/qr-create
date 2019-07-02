@@ -1,37 +1,37 @@
 import {Component} from '@angular/core';
 import {CryptographyService} from './cryptography/cryptography.service';
 import * as uuid from 'uuid/v4';
-import {log} from 'util';
-import {timestamp} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {post} from 'selenium-webdriver/http';
 
 
 const RSA_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCgjxsvFI0Xo0n5
-8su6oai0ALNL7phLUbhpug8dHoZ3n8bRzdO0E3uOax/ckUY9U9Ueywyjg2US2627
-UmnZJh+u+u4iiSqdzy+jdxUw4XxyVlmJaZ88F4/ztI+NNBmbdwlCGnhNEut+mKER
-XOF/951HbP1Bkgp6MRXlY1IBN8nuUyX5VtE+NEwJOh0UDcWDZtDi1ix934/grOmB
-BuNE3l9pVZYhl/sARnkX3KTTBnad2mZq2117YRh6aiiTNlIMFsLYSVTYCzGGJ9mr
-O6CJZ69qop0uv1otEcI9E77dBmjXuW1uXk8C0ftmaVQr1XyvGLOgYC4ZyD5ZmBoQ
-iEGtlkuzAgMBAAECggEANTY4dCoDeMoNQmFNU9Uv7DgvNAMnRg8XZzLav3PWbN7v
-LalheFTcph6quJcNCFY4U7RHxAlP/igANAzkN6uC5KMVOSzsitCXoT1eMI0KiXpE
-wl3XADtu4f39dXbG5ddVoirTo/eZRKOg/fgiZB7UaU+dv5V/E3AhKZz5GJ48tlch
-AtIwksfE/fqHEUJ+vUpSBkRyaKdH8T9oJAQV4L53NC1W5TP7c7mhF+gbFzvO52Np
-eC0uX++RyWSnyDDe/ueu1eXBboTKz8TOcwFcVrBInQGlUVD0+Sz2eJc3iL97nx3+
-raMqiq7+0dI9fUew4RV4aAMvvGqmqC+z3MwksBqGwQKBgQDjU4/KDztn9TFTR1Hp
-4fnJGHG4qv9Fb2v7xnHQWxb4PkCcB3D5r/AZKQxZpP+dVNpRazBblNAeHMDy34UG
-5gYUbaweDHtxk7ZiDMQFvp5Im8g38fl2AF1ylGniBuTq5+45Y654Y8fuETF2E/0K
-tbpDM3qFa9lUZJJA22KbIFBNTwKBgQC0z5rcINMVOvtvDBQ1ZepyDLJsUIvMjsY9
-XUdbFUpHjLa+evSNPr1In/jl0ySqqvD8QI5cK8zVHA2Fgl7kkBBUrhKFGb/qs44/
-PDffJwsJTaXZFgotmidBi0WhPrYLAzLa5Nq9F/8Yu4LuaUB4SE9VxUy4ztALZaAn
-su5g6kDqXQKBgECCqB1pMSyRMkw1wxMiI6Zjn3IOZJ6pvfUXHZlJID2WPPOKUQ8q
-VHJvaafO4RMez02no3N5yY2iD0ddEv0gLb2CWgO0+xsCFhHBGaefrn9gZfMqYeaQ
-t/QaFeoklrXq13nFxe84MbZnfqfJiFePtqn3Y9+U+XmviKmLGHJ5OxCVAoGAROMn
-5CBZa6hKLVfTxzhqJ0OxItVZPflTjAOi8Q/eef4hjdb4n2u84BOa160nNiLkp6bM
-1k8Vvkfu2uP91WUR48FiavWRihEY6/y8aLfOW6AKxPfBrvghZrZyM+nZn757PKye
-rhabaUffrYfKOUmLeGkwPuUEnKL+bsGcUq5NRz0CgYBwTJXCL2XoGDQnbfU+umd+
-TuZ/ivFErmeIuUlYwJ0rjgEVS2y7FLdsM1tFNucIg3AwjCVipbsAHdAYAqRNkKp+
-WXsv/VNuvoBwQ9ZpAkZ3+SRaMziiwxXZ4MCw5MgTzWnBG28L4d1Ma5a14+IpBM4U
-2t7zQtojTgFT6ff/Ndm2Zg==
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCu7BsmNJOFa3f7
+4vv9DTw/W7XgC7cE2SPEmtNx3laTU1MrB+6y3kJmPH4WnmETRQ892qIQA7THA2t+
+G9ag31Mh5B8FhPHsnF5TndVyCjCFxCCGbCMVu1eLTWjpYKGYFp7rSWkibIqYyATb
+DJOGSJt+azr5UbBf0a82XmA9Kx6GC+etv4+TCbfyOEDtfs27qH7C6eCpdlsFCZ/v
+Xe97kZNzqdREX/jnhIZknM0GJlUUFze7+axvqpidxZH29FS1qN1G6sj7LKDp0LMj
+tnckwxl1J2u8aXxSbebkv+8zF5uj5N6jNxFkSZFRneXOSnDvcjIEhuecAuQc8ffV
+RfHngAwpAgMBAAECggEASKpKqPdkZSN854Wmuru50HQvvNABCqGNq0nKFt6PRopx
+3UlhTqroGIJ+urS2jQO+Tiq58j8n5Ri1meDEq3W6mjSi8m8E9Q8MXF4P4lz7RUZx
+YIYhmRCHUJYqw/BhkMWs5P9NDoDanpdQ9RJnYnxdJAo1qIbX5yY7TDGudxqnhnVR
+SVVxOHa4z1aWmBs4ZfdLuuZLR7VKlrxJczk90U+gUHwwRxzG9QzuwnsMeBRcd7FL
+cQwDknYuxjEHcr040/HZaxqp7AsTzgrQtvlXuuJJWptICguvCpoOJ0/rcv7pxnIK
+Q6dbh7b+cd7r4wJWKos97IXOz31Awekw39YbN08VNQKBgQDkTPsyNRrTWZXZtAMN
+mm/qHwMst7RwifqI3JyOi6rz+MKpYBwbz+sMXOYy7bq4koTp2/LFetW6puYvCXt3
+x2OELe5IVpTwLfIVrtrA92o4lEaFJE+X2D1C+dHWuS+4OsuNhMOGaUo3Q4PIACB4
+FyHhxC8zaO8jrT47zMd+iZrE1wKBgQDEJTEA0BjWdA/Yx46SIMD0+5gvZd8LROXr
+6HtabMn5pUTL8gyverDOv5VwBk1Y0mv5ztfaP494RByYQUHNaf2lVENJ+ddcPuVx
+qwnbBDVXf/ReWWdaxnoD4evSgiO4+IuWGmbzTEq8L/WPMr8+theIdL1DjoWcnkkf
+uY4PMQCW/wKBgQDP34xFrfbsBEEehfrVsw499dj1KZwBcJEPdxiR7nhNRu8wO9O8
+OzgA/MGaE74Ve0vMiDnoOC1Nk9Q5df/XE1T4sL2rXjKk8qDfv2Ntmpo8RD5l0qcq
+UnmNd1zqj5n0vIxFImLKCyrJYQ8n1324+w8du31i6SP9ryvgVVg8Tlz+5wKBgHFw
+jRHKSMMm5s9aQsOSu+Yz6IVpJoFu/IbesxDOIFYI1mwZdmq6y60XModSrcM0F4yn
+q0EnR4On6N3JyBPUPAU1YaFUJNDN84c1A4MuwOb1MtCqZlMivQinzeq2p5Bf9uL+
+LBKESijil+OU1vSe/adG1PtQX0gAZ4w4lceFcLDjAoGBAJxYzSc9xJuZW6dEh5xy
+hhM0or+SPv8lx8hNq1UslUToDd4XE3AHVXbQ5D6X+gned/AWz+BY/TkCuEH8XImN
+JWgOD/4sT1gcWz3VBRvF7Q4DlBNK2BpQovCo0FRI3ho341fBME0Bmt9jZf1CWfwX
+IDCeKnigqO9zDH2cn5rmaVxh
 -----END PRIVATE KEY-----`;
 
 @Component({
@@ -42,23 +42,25 @@ WXsv/VNuvoBwQ9ZpAkZ3+SRaMziiwxXZ4MCw5MgTzWnBG28L4d1Ma5a14+IpBM4U
 export class AppComponent {
 
   userId = '84b33655-b336-4fcd-b76d-d0a898196776';
-  keyId = '98c27855-f44f-4a45-9944-e375de3941a6';
+  keyId = '2c18cf6a-edaa-4d32-963a-1fab8fc8c465';
   privateKey = null;
 
-  constructor(private cryptoService: CryptographyService) {
+  constructor(private http: HttpClient, private cryptoService: CryptographyService) {
     this.privateKey = this.cryptoService.pemToPrivateKey((RSA_PRIVATE_KEY));
   }
 
 
   private _message = 'write something';
   qrString = 'lol';
+  publicPem;
+  privatePem;
 
   generateKey(){
     let keyPair = this.cryptoService.generateKeyPair();
-    let publicPem = this.cryptoService.publicKeyToPem(keyPair.publicKey);
-    let privatePem = this.cryptoService.privateKeytoPem(keyPair.privateKey);
-    console.log(publicPem);
-    console.log(privatePem);
+    this.publicPem = this.cryptoService.publicKeyToPem(keyPair.publicKey);
+    this.privatePem = this.cryptoService.privateKeytoPem(keyPair.privateKey);
+    console.log(this.publicPem);
+    console.log(this.privatePem);
   }
 
   generateQr() {
@@ -85,5 +87,10 @@ export class AppComponent {
 
   get message() {
     return this._message;
+  }
+
+  async sendKey(){
+    let stuff =  await this.http.post<any>('https://services.idx.pensare.mx/api/verify', {signedToken: this.qrString, idKey: this.keyId}).toPromise();
+    console.log(stuff);
   }
 }
